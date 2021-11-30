@@ -3,11 +3,10 @@ import numpy as np
 import os
 import sys
 
-NOTE='notaus/'
+NOTE=''
 tau_neutrinos =''
-# tau_neutrinos = '--tau_neutrinos'
-# NOTE=''
 fastmc_dir = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/FastMC/' + NOTE
+osg = "False"
 
 # realization_file = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/FastMC/Platinum_Split_HE_Alex_2.00_7.6_Alex_AIRS_sib_HG_th24_th34_dm2/Asimov_0_1.000000_0.000000_0.409453_0.448906_0.000000_0.000000.npz'
 # realization_file = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/FastMC/notaus/Platinum_Split_HE_Alex_2.00_7.6_Alex_AIRS_sib_HG_th24_th34_dm2/Asimov_0_1.000000_0.000000_0.409453_0.448906_0.000000_0.000000.npz'
@@ -52,7 +51,7 @@ flux_dict = {
     'del14' : str(format(float(del14), '.6f')),
     'del24' : str(format(float(del24), '.6f')),
     'user' : 'adiaz', 
-    'osg' : 'False',
+    'osg' : osg,
     'flux' : "AIRS_flux_sib_HG.dat"
 }
 
@@ -78,8 +77,11 @@ fit_dict = {
     'n_seeds' : '5'
 }
 
-def make_flux(filename, jobname, fluxdir, dm2, th24, th34, Ut4sq):
-    filename.write('JOB\t' + jobname + '\t/home/adiaz/Cascades/th34/make_flux.submit\n')
+def make_flux(filename, jobname, fluxdir, dm2, th24, th34, Ut4sq, osg = "False"):
+    if osg == "True":
+        filename.write('JOB\t' + jobname + '\t/home/adiaz/Cascades/th34/make_flux_OSG.submit\n')
+    else:
+        filename.write('JOB\t' + jobname + '\t/home/adiaz/Cascades/th34/make_flux.submit\n')
     print_vars(filename, jobname, 'th24',  str(format(float(th24), '.6f')))
     print_vars(filename, jobname, 'th34',  str(format(float(th34), '.6f')))
     print_vars(filename, jobname, 'dmsq41',  str(format(float(dm2), '.6f')))
@@ -105,6 +107,7 @@ def make_fit(filename, jobname, fluxdir, point, outdir, Ut4sq):
         print_vars(filename, jobname, key, value)
     # filename.write('Retry ' + jobname + " 2\n")
 
+i = -1
 for Ut4sq in Ut4sq_list:
     if Ut4sq == 0.:
         j = 1
@@ -118,19 +121,15 @@ for Ut4sq in Ut4sq_list:
             points[j] = (dm2, Um4sq, Ut4sq)
             j+=1
 
-
-
-    # fluxdir = "/data/user/jconrad/temp_fluxes/"
-    # fluxdir = "/data/user/adiaz/MEOWS/Cascades/th34/temp_flux/Alex_AIRS_sib_HG_th24_th34_dm2/"
     years = str(7.6)
     F = os.getcwd() + '/Ut4sq_' + str(format(float(Ut4sq), '.6f')) + '.dag'
     with open(F, 'w') as f:
 
-        i = -1
         for (dm2, Um4sq, Ut4sq) in  points:
             i += 1
 
-            fluxdir = "/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/Fluxes/Alex_AIRS_sib_HG_th24_th34_dm2/Ut4sq_" + str(format(float(Ut4sq), '.6f')) + '/'
+            fluxdir = "/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/Fluxes/AIRS_sib_HG_th24_th34_dm2/Ut4sq_" + str(format(float(Ut4sq), '.6f')) + '/'
+            # os.makedirs(fluxdir, exist_ok=True)
             outdir = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/Asimov/'+OUTDIRNOTE+'Ut4sq_' + str(format(float(Ut4sq), '.6f')) + '/'
             if Um4sq + Ut4sq > 1.:
                 continue
@@ -138,28 +137,27 @@ for Ut4sq in Ut4sq_list:
 
             th34 = np.arcsin(np.sqrt( Ut4sq / (1.-Um4sq) ) )
 
-            # jobname_A = str(i) + "A"
-            # make_flux(f, jobname_A, fluxdir, dm2, th24, th34, Ut4sq)
-
+            jobname_A = str(i) + "A"
+            make_flux(f, jobname_A, fluxdir, dm2, th24, th34, Ut4sq, osg)
 
             if not math.isclose(Ut4sq,  np.sin(th34)**2 * np.cos(th24)**2):
                 print("ohno", Ut4sq, np.sin(th34)**2 * np.cos(th24)**2)
 
-            jobname_B = str(i) + "B"
-            point = flux_dict['index'] + "_" + str(format(float(dm2), '.6f')) + "_" + flux_dict['th14'] + "_" + str(format(float(th24), '.6f')) + "_" +str(format(float(th34), '.6f')) + "_" + flux_dict['del14'] + "_" + flux_dict['del24']
-            description = fastmc_dict['sim']+'_'+fastmc_dict['fast_scaling']+'_'+years+'_'+fluxdir.split('/')[-3]+'/'+fluxdir.split('/')[-2]+'/'+ point+'/'
+            # jobname_B = str(i) + "B"
+            # point = flux_dict['index'] + "_" + str(format(float(dm2), '.6f')) + "_" + flux_dict['th14'] + "_" + str(format(float(th24), '.6f')) + "_" +str(format(float(th34), '.6f')) + "_" + flux_dict['del14'] + "_" + flux_dict['del24']
+            # description = fastmc_dict['sim']+'_'+fastmc_dict['fast_scaling']+'_'+years+'_'+fluxdir.split('/')[-3]+'/'+fluxdir.split('/')[-2]+'/'+ point+'/'
 
-            if not os.path.exists(fastmc_dict['fastmc_dir'] + description +'/STERILE.meows'):
-                make_fastmc(f, jobname_B, fluxdir, point, Ut4sq)
-                jobname_C = str(i) + "C"
-                make_fit(f, jobname_C, fluxdir, point, outdir, Ut4sq)
-                f.write("PARENT " + jobname_B + " CHILD " + jobname_C + "\n")
-                continue
+            # if not os.path.exists(fastmc_dict['fastmc_dir'] + description +'/STERILE.meows'):
+                # make_fastmc(f, jobname_B, fluxdir, point, Ut4sq)
+                # jobname_C = str(i) + "C"
+                # make_fit(f, jobname_C, fluxdir, point, outdir, Ut4sq)
+                # f.write("PARENT " + jobname_B + " CHILD " + jobname_C + "\n")
+                # continue
 
-            if not os.path.exists(outdir+ point+'_'+ fit_dict['realization_file'].split('/' )[-1].split('.npz')[0]+'.json'):
-                jobname_C = str(i) + "C"
-                make_fit(f, jobname_C, fluxdir, point, outdir, Ut4sq)
-                continue
+            # if not os.path.exists(outdir+ point+'_'+ fit_dict['realization_file'].split('/' )[-1].split('.npz')[0]+'.json'):
+                # jobname_C = str(i) + "C"
+                # make_fit(f, jobname_C, fluxdir, point, outdir, Ut4sq)
+                # continue
 
             # f.write("PARENT " + jobname_A + " CHILD " + jobname_B + "\n")
 

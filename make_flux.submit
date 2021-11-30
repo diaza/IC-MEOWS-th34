@@ -7,7 +7,12 @@ transfer_output_files = ""
 environment = "OUTDIR=$(outdir)"
 arguments = "--th24 $(th24) --indir $(indir) --outdir $(outdir) --flux $(flux) --index $(index) --dmsq41 $(dmsq41) --th14 $(th14) --th34 $(th34) --del14 $(del14) --del24 $(del24)"
 stream_output = True
-request_memory = 2G
+request_memory = 5G
 #+AccountingGroup="quicktest.$ENV(USER)"
+
+periodic_hold = (JobStatus == 2) && (time() - EnteredCurrentStatus) > (24 * 3600)
+periodic_hold_reason = "Job ran for more than 24 hours"
+periodic_hold_subcode = 42
+periodic_release = (HoldReasonSubCode == 42)
 
 queue
