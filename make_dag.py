@@ -40,17 +40,17 @@ log_Ut4sq_list = np.asarray(np.ndarray.tolist(np.arange(-3., 0., 0.2)))
 Ut4sq_list = np.power(10, log_Ut4sq_list)
 Ut4sq_list = np.insert(Ut4sq_list, 0, 0.)
 
-print(dm2_list)
-print(len(dm2_list), len(Um4sq_list), len(Ut4sq_list))
+del24_list = [0.]
+print(del24_list)
+
+print(len(dm2_list), len(Um4sq_list), len(Ut4sq_list), len(del24_list))
 th14 = 0.
 del14 = 0.
-del24 = 0.
 flux_dict = {
     'th14' :  str(format(float(th14), '.6f')),
     'indir' : "/data/user/adiaz/GolemFit/resources/FluxOscCalculator/",
     'index' : "0",
     'del14' : str(format(float(del14), '.6f')),
-    'del24' : str(format(float(del24), '.6f')),
     'user' : 'adiaz', 
     'osg' : osg,
     'flux' : "AIRS_flux_sib_HG.dat"
@@ -80,7 +80,7 @@ fit_dict = {
     'n_seeds' : '5'
 }
 
-def make_flux(filename, jobname, fluxdir, dm2, th24, th34, Ut4sq, osg = "False"):
+def make_flux(filename, jobname, fluxdir, dm2, th24, th34, Ut4sq, del24, osg = "False"):
     if osg == "True":
         filename.write('JOB\t' + jobname + '\t/home/adiaz/Cascades/th34/make_flux_OSG.submit\n')
     else:
@@ -88,6 +88,7 @@ def make_flux(filename, jobname, fluxdir, dm2, th24, th34, Ut4sq, osg = "False")
     print_vars(filename, jobname, 'th24',  str(format(float(th24), '.6f')))
     print_vars(filename, jobname, 'th34',  str(format(float(th34), '.6f')))
     print_vars(filename, jobname, 'dmsq41',  str(format(float(dm2), '.6f')))
+    print_vars(filename, jobname, 'del24',  str(format(float(del24), '.6f')))
     print_vars(filename, jobname, 'outdir',  fluxdir)
     for key, value in flux_dict.items():
         print_vars(filename, jobname, key, value)
@@ -123,21 +124,22 @@ for Ut4sq in Ut4sq_list:
     print(Ut4sq)
     if Ut4sq == 0.:
         j = 1
-        points = [(0.,0.,0.)]*(len(dm2_list)*len(Um4sq_list) + 1)
+        points = [(0.,0.,0.,0.)]*(len(dm2_list)*len(Um4sq_list)*len(del24_list) + 1)
     else:
         j = 0
-        points = [(0.,0.,0.)]*(len(dm2_list)*len(Um4sq_list))
+        points = [(0.,0.,0.,0.)]*(len(dm2_list)*len(Um4sq_list)*len(del24_list))
 
     for Um4sq in Um4sq_list:
         for dm2 in dm2_list:
-            points[j] = (dm2, Um4sq, Ut4sq)
-            j+=1
+            for del24 in del24_list:
+                points[j] = (dm2, Um4sq, Ut4sq, del24)
+                j+=1
 
     years = str(7.6)
     F = os.getcwd() + '/Ut4sq_' + str(format(float(Ut4sq), '.6f')) + '.dag'
     with open(F, 'w') as f:
 
-        for (dm2, Um4sq, Ut4sq) in  points:
+        for (dm2, Um4sq, Ut4sq, del24) in  points:
             i += 1
 
             fluxdir = "/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/Fluxes/AIRS_sib_HG_th24_th34_dm2/Ut4sq_" + str(format(float(Ut4sq), '.6f')) + '/'
@@ -150,7 +152,7 @@ for Ut4sq in Ut4sq_list:
 
             th34 = np.arcsin(np.sqrt( Ut4sq / (1.-Um4sq) ) )
 
-            point = flux_dict['index'] + "_" + str(format(float(dm2), '.6f')) + "_" + flux_dict['th14'] + "_" + str(format(float(th24), '.6f')) + "_" +str(format(float(th34), '.6f')) + "_" + flux_dict['del14'] + "_" + flux_dict['del24']
+            point = flux_dict['index'] + "_" + str(format(float(dm2), '.6f')) + "_" + flux_dict['th14'] + "_" + str(format(float(th24), '.6f')) + "_" +str(format(float(th34), '.6f')) + "_" + flux_dict['del14'] + "_" + str(format(float(del24), '.6f'))
 
             jobname_A = str(i) + "A"
             jobname_B = str(i) + "B"
@@ -159,7 +161,7 @@ for Ut4sq in Ut4sq_list:
                 if not exists(fluxdir + prefix + "_" + point + ".hdf5"):
 
                     os.makedirs(fluxdir, exist_ok=True)
-                    make_flux(f, jobname_A, fluxdir, dm2, th24, th34, Ut4sq, osg)
+                    make_flux(f, jobname_A, fluxdir, dm2, th24, th34, Ut4sq, del24, osg)
                     f.write("PARENT " + jobname_A + " CHILD " + jobname_B + "\n")
 
                     break
