@@ -71,9 +71,9 @@ fastmc_dict = {
 fit_dict = {
     'use_fastMC' : 'True',
     'Emax' : '9976',
-    'sim' : 'Platinum_Split_HE_Alex',
+    'sim' : fastmc_dict['sim'],
     'max_sim' : '-1', 
-    'fast_scaling' : '2.00',
+    'fast_scaling' : fastmc_dict['fast_scaling'],
     'tau_neutrinos' : tau_neutrinos,
     'fastmc_dir' : fastmc_dict['fastmc_dir'],
     'realization_file' : realization_file,
@@ -104,8 +104,11 @@ def make_fastmc(filename, jobname, fluxdir, point, Ut4sq, osg = "False"):
         print_vars(filename, jobname, key, value)
     filename.write('Retry ' + jobname + " 2\n")
 
-def make_fit(filename, jobname, fluxdir, point, outdir, Ut4sq):
-    filename.write('JOB\t' + jobname + '\t/home/adiaz/Cascades/th34/do_fit.submit\n')
+def make_fit(filename, jobname, fluxdir, point, outdir, Ut4sq, osg = "False"):
+    if osg == "True":
+        filename.write('JOB\t' + jobname + '\t/home/adiaz/Cascades/th34/do_fit_OSG.submit\n')
+    else:
+        filename.write('JOB\t' + jobname + '\t/home/adiaz/Cascades/th34/do_fit.submit\n')
     print_vars(filename, jobname, 'point', point)
     print_vars(filename, jobname, 'fluxdir', fluxdir)
     print_vars(filename, jobname, 'outdir', outdir)
@@ -169,14 +172,9 @@ for Ut4sq in Ut4sq_list:
             if not os.path.exists(fastmc_dict['fastmc_dir'] + description +'/STERILE.meows'):
                 make_fastmc(f, jobname_B, fluxdir, point, Ut4sq, osg)
                 # make_fit(f, jobname_C, fluxdir, point, outdir, Ut4sq)
-                # f.write("PARENT " + jobname_B + " CHILD " + jobname_C + "\n")
+                f.write("PARENT " + jobname_B + " CHILD " + jobname_C + "\n")
                 # continue
 
-            # if not os.path.exists(outdir+ point+'_'+ fit_dict['realization_file'].split('/' )[-1].split('.npz')[0]+'.json'):
-                # jobname_C = str(i) + "C"
-                # make_fit(f, jobname_C, fluxdir, point, outdir, Ut4sq)
+            if not os.path.exists(outdir+ point+'_'+ fit_dict['realization_file'].split('/' )[-1].split('.npz')[0]+'.json'):
+                make_fit(f, jobname_C, fluxdir, point, outdir, Ut4sq, osg)
                 # continue
-
-            # f.write("PARENT " + jobname_A + " CHILD " + jobname_B + "\n")
-
-
