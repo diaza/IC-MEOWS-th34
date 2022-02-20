@@ -7,7 +7,8 @@ import sys
 NOTE=''
 tau_neutrinos =''
 fastmc_dir = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/FastMC/' + NOTE
-osg = "False"
+years = '7.634'
+fast_scaling = '0.25'
 
 # realization_file = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/FastMC/Platinum_Split_HE_Alex_2.00_7.6_Alex_AIRS_sib_HG_th24_th34_dm2/Asimov_0_1.000000_0.000000_0.409453_0.448906_0.000000_0.000000.npz'
 # realization_file = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/FastMC/notaus/Platinum_Split_HE_Alex_2.00_7.6_Alex_AIRS_sib_HG_th24_th34_dm2/Asimov_0_1.000000_0.000000_0.409453_0.448906_0.000000_0.000000.npz'
@@ -16,8 +17,9 @@ osg = "False"
 
 # realization_file = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/FastMC/Platinum_Split_HE_Alex_2.00_7.6_Alex_AIRS_sib_HG_th24_th34_dm2/Asimov.npz'
 
-realization_file = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/FastMC/Platinum_Split_HE_Alex_2.00_7.6_Alex_AIRS_sib_HG_th24_th34_dm2/Asimov_0_1.000000_0.000000_0.159160_0.257232_0.000000_0.000000.npz'
-OUTDIRNOTE = '0_1.000000_0.000000_0.159160_0.257232_0.000000_0.000000_with_taus/' + NOTE 
+outdirname = '0_0.000000_0.000000_0.000000_0.000000_0.000000_0.000000'
+outdirbase = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/Fits/Asimov/'+outdirname +'/'
+realization_file = outdirbase + 'Asimov.npz'
 
 # realization_file = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/FastMC/notaus/Platinum_Split_HE_Alex_2.00_7.6_Alex_AIRS_sib_HG_th24_th34_dm2/Asimov_0_1.000000_0.000000_0.159160_0.257232_0.000000_0.000000.npz'
 # OUTDIRNOTE = '0_1.000000_0.000000_0.159160_0.257232_0.000000_0.000000_without_taus/' + NOTE 
@@ -40,7 +42,7 @@ log_Ut4sq_list = np.asarray(np.ndarray.tolist(np.arange(-3., 0., 0.2)))
 Ut4sq_list = np.power(10, log_Ut4sq_list)
 Ut4sq_list = np.insert(Ut4sq_list, 0, 0.)
 
-del24_list = [0.]
+del24_list = [0., np.pi]
 print(del24_list)
 
 print(len(dm2_list), len(Um4sq_list), len(Ut4sq_list), len(del24_list))
@@ -52,7 +54,7 @@ flux_dict = {
     'index' : "0",
     'del14' : str(format(float(del14), '.6f')),
     'user' : 'adiaz', 
-    'osg' : osg,
+    'osg' : "False",
     'flux' : "AIRS_flux_sib_HG.dat"
 }
 
@@ -62,10 +64,11 @@ fastmc_dict = {
     # 'sim' : 'Platinum_Split_HE_Alex',
     'sim' : 'Platinum_Split_Plus_Tau',
     'max_sim' : '-1',
-    'fast_scaling' : '0.25',
+    'fast_scaling' : fast_scaling,
     'tau_neutrinos' : tau_neutrinos,
     'fastmc_dir' : fastmc_dir,
-    'osg' : osg
+    'years' : years,
+    'osg' : "False"
 }
 
 fit_dict = {
@@ -77,7 +80,9 @@ fit_dict = {
     'tau_neutrinos' : tau_neutrinos,
     'fastmc_dir' : fastmc_dict['fastmc_dir'],
     'realization_file' : realization_file,
-    'n_seeds' : '5'
+    'n_seeds' : '5',
+    'years' : years,
+    'osg' : "False"
 }
 
 def make_flux(filename, jobname, fluxdir, dm2, th24, th34, Ut4sq, del24, osg = "False"):
@@ -115,10 +120,16 @@ def make_fit(filename, jobname, fluxdir, point, outdir, Ut4sq, osg = "False"):
     print_vars(filename, jobname, 'outdir', outdir)
     for key, value in fit_dict.items():
         print_vars(filename, jobname, key, value)
-    # filename.write('Retry ' + jobname + " 2\n")
+    filename.write('Retry ' + jobname + " 3\n")
 
 i = -1
-flux_prefixes = ['astro', 'atmospheric', 'barr_grad_HM', 'barr_grad_HP', 'barr_grad_WM', 'barr_grad_WP', 'barr_grad_YM', 'barr_grad_YP', 'barr_grad_ZM', 'barr_grad_ZP', 'prompt_atmospheric']
+flux_prefixes = ['astro', 'atmospheric', 'barr_grad_WM', 'barr_grad_WP', 'barr_grad_YM', 'barr_grad_YP', 'barr_grad_ZM', 'barr_grad_ZP', 'prompt_atmospheric']
+
+def do_fluxes_exist(fluxdir, point):
+    for prefix in flux_prefixes:
+        if not exists(fluxdir + prefix + "_" + point + ".hdf5"):
+            return False
+    return True
 
 for Ut4sq in Ut4sq_list:
     print(Ut4sq)
@@ -135,7 +146,6 @@ for Ut4sq in Ut4sq_list:
                 points[j] = (dm2, Um4sq, Ut4sq, del24)
                 j+=1
 
-    years = str(7.6)
     F = os.getcwd() + '/Ut4sq_' + str(format(float(Ut4sq), '.6f')) + '.dag'
     with open(F, 'w') as f:
 
@@ -144,7 +154,7 @@ for Ut4sq in Ut4sq_list:
 
             fluxdir = "/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/Fluxes/AIRS_sib_HG_th24_th34_dm2/Ut4sq_" + str(format(float(Ut4sq), '.6f')) + '/'
 
-            outdir = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/FastMC/' + 'Ut4sq_' + str(format(float(Ut4sq), '.6f')) + '/'
+            outdir = outdirbase + '/Ut4sq_' + str(format(float(Ut4sq), '.6f')) + '/'
 
             if Um4sq + Ut4sq > 1.:
                 continue
@@ -157,26 +167,25 @@ for Ut4sq in Ut4sq_list:
             jobname_A = str(i) + "A"
             jobname_B = str(i) + "B"
             jobname_C = str(i) + "C"
-            for prefix in flux_prefixes:
-                if not exists(fluxdir + prefix + "_" + point + ".hdf5"):
-
-                    os.makedirs(fluxdir, exist_ok=True)
-                    make_flux(f, jobname_A, fluxdir, dm2, th24, th34, Ut4sq, del24, osg)
-                    f.write("PARENT " + jobname_A + " CHILD " + jobname_B + "\n")
-
-                    break
 
             if not math.isclose(Ut4sq,  np.sin(th34)**2 * np.cos(th24)**2):
                 print("ohno", Ut4sq, np.sin(th34)**2 * np.cos(th24)**2)
 
+            if not do_fluxes_exist(fluxdir, point):
+                os.makedirs(fluxdir, exist_ok=True)
+                make_flux(f, jobname_A, fluxdir, dm2, th24, th34, Ut4sq, del24, flux_dict['osg'])
+                f.write("PARENT " + jobname_A + " CHILD " + jobname_B + "\n")
+                # continue
+
             description = fastmc_dict['sim']+'_'+fastmc_dict['fast_scaling']+'_'+years+'_'+fluxdir.split('/')[-3]+'/'+fluxdir.split('/')[-2]+'/'+ point+'/'
 
             if not os.path.exists(fastmc_dict['fastmc_dir'] + description +'/STERILE.meows'):
-                make_fastmc(f, jobname_B, fluxdir, point, Ut4sq, osg)
-                # make_fit(f, jobname_C, fluxdir, point, outdir, Ut4sq)
+                os.makedirs(fastmc_dict['fastmc_dir'] + description, exist_ok=True)
+                make_fastmc(f, jobname_B, fluxdir, point, Ut4sq, fastmc_dict['osg'])
                 f.write("PARENT " + jobname_B + " CHILD " + jobname_C + "\n")
                 # continue
 
             if not os.path.exists(outdir+ point+'_'+ fit_dict['realization_file'].split('/' )[-1].split('.npz')[0]+'.json'):
-                make_fit(f, jobname_C, fluxdir, point, outdir, Ut4sq, osg)
+                os.makedirs(outdir, exist_ok=True)
+                make_fit(f, jobname_C, fluxdir, point, outdir, Ut4sq, fit_dict['osg'])
                 # continue
