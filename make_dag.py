@@ -8,26 +8,14 @@ NOTE=''
 tau_neutrinos =''
 fastmc_dir = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/FastMC/' + NOTE
 years = '7.634'
-fast_scaling = '0.25'
+fast_scaling = '0.50'
 
-# realization_file = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/FastMC/Platinum_Split_HE_Alex_2.00_7.6_Alex_AIRS_sib_HG_th24_th34_dm2/Asimov_0_1.000000_0.000000_0.409453_0.448906_0.000000_0.000000.npz'
-# realization_file = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/FastMC/notaus/Platinum_Split_HE_Alex_2.00_7.6_Alex_AIRS_sib_HG_th24_th34_dm2/Asimov_0_1.000000_0.000000_0.409453_0.448906_0.000000_0.000000.npz'
-# OUTDIRNOTE = '0_1.000000_0.000000_0.409453_0.448906_0.000000_0.000000_with_taus/' + NOTE 
-# OUTDIRNOTE = '0_1.000000_0.000000_0.409453_0.448906_0.000000_0.000000_without_taus/' + NOTE 
-
-# realization_file = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/FastMC/Platinum_Split_HE_Alex_2.00_7.6_Alex_AIRS_sib_HG_th24_th34_dm2/Asimov.npz'
-
-outdirname = '0_0.000000_0.000000_0.000000_0.000000_0.000000_0.000000'
-outdirbase = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/Fits/Asimov/'+outdirname +'/'
+outdirname = '/Asimov_at_'+fast_scaling+'_tolerance_1e-20/0_0.000000_0.000000_0.000000_0.000000_0.000000_0.000000'
+outdirbase = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/Fits/'+outdirname +'/'
 realization_file = outdirbase + 'Asimov.npz'
-
-# realization_file = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/FastMC/notaus/Platinum_Split_HE_Alex_2.00_7.6_Alex_AIRS_sib_HG_th24_th34_dm2/Asimov_0_1.000000_0.000000_0.159160_0.257232_0.000000_0.000000.npz'
-# OUTDIRNOTE = '0_1.000000_0.000000_0.159160_0.257232_0.000000_0.000000_without_taus/' + NOTE 
-
 
 def print_vars(f, jobname, var_name, val):
     f.write('VARS\t' + jobname.strip() + '\t' + var_name+'=\"' + val+ "\"\n")
-
 
 # logdm2_list = np.asarray(np.ndarray.tolist(np.arange(-2.15, 2.10, 0.05))+ [2.15])
 logdm2_list = np.asarray(np.ndarray.tolist(np.arange(-2.10, 2.10, 0.1))+ [2.15])
@@ -42,7 +30,7 @@ log_Ut4sq_list = np.asarray(np.ndarray.tolist(np.arange(-3., 0., 0.2)))
 Ut4sq_list = np.power(10, log_Ut4sq_list)
 Ut4sq_list = np.insert(Ut4sq_list, 0, 0.)
 
-del24_list = [0., np.pi]
+del24_list = [np.pi]
 print(del24_list)
 
 print(len(dm2_list), len(Um4sq_list), len(Ut4sq_list), len(del24_list))
@@ -80,9 +68,11 @@ fit_dict = {
     'tau_neutrinos' : tau_neutrinos,
     'fastmc_dir' : fastmc_dict['fastmc_dir'],
     'realization_file' : realization_file,
-    'n_seeds' : '5',
+    'n_seeds' : '-1',
     'years' : years,
-    'osg' : "False"
+    'osg' : "True",
+    'change_tol' : '1e-20',
+    'grad_tol' : '1e-20'
 }
 
 def make_flux(filename, jobname, fluxdir, dm2, th24, th34, Ut4sq, del24, osg = "False"):
