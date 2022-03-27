@@ -1,18 +1,37 @@
-import math 
+import math
 import numpy as np
 import os
 from os.path import exists
 import sys
+import argparse
 
-NOTE=''
+parser = argparse.ArgumentParser() 
+parser.add_argument('--fast_scaling', type=str, required=True)
+parser.add_argument('--fastmc_dir', type=str, default = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/FastMC/')
+parser.add_argument('--realization_file', type=str)
+parser.add_argument('--outdirbase', type=str)
+
+parser.add_argument('--make_flux', action="store_true")
+parser.add_argument('--make_fastmc', action="store_true")
+parser.add_argument('--do_fit', action="store_true")
+
+parser.add_argument('--osg', type=str, default="False")
+
+parser.add_argument('--outdir_dag', type=str, default = os.getcwd())
+
+args = parser.parse_args()
+
 tau_neutrinos =''
-fastmc_dir = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/FastMC/' + NOTE
+fastmc_dir = args.fastmc_dir
 years = '7.634'
-fast_scaling = '0.50'
+fast_scaling = args.fast_scaling
 
-outdirname = '/Asimov_at_'+fast_scaling+'_tolerance_1e-20/0_0.000000_0.000000_0.000000_0.000000_0.000000_0.000000'
-outdirbase = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/Fits/'+outdirname +'/'
-realization_file = outdirbase + 'Asimov.npz'
+osg = args.osg
+
+# outdirname = '/Asimov_at_'+fast_scaling+'_tolerance_1e-20/0_0.000000_0.000000_0.000000_0.000000_0.000000_0.000000'
+# outdirbase = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/Fits/'+outdirname +'/'
+outdirbase = args.outdirbase
+realization_file = args.realization_file
 
 def print_vars(f, jobname, var_name, val):
     f.write('VARS\t' + jobname.strip() + '\t' + var_name+'=\"' + val+ "\"\n")
@@ -22,13 +41,16 @@ logdm2_list = np.asarray(np.ndarray.tolist(np.arange(-2.10, 2.10, 0.1))+ [2.15])
 dm2_list = np.power(10, logdm2_list)
 
 dm2_list = dm2_list[np.logical_and(dm2_list>.1, dm2_list<50)]
+dm2_list = np.append(dm2_list, 50.)
 
 log_Um4sq_list = np.asarray(np.ndarray.tolist(np.arange(-3., 0., 0.1)))
 Um4sq_list = np.power(10, log_Um4sq_list)
+Um4sq_list = np.append(Um4sq_list, 0.50)
 
 log_Ut4sq_list = np.asarray(np.ndarray.tolist(np.arange(-3., 0., 0.2)))
 Ut4sq_list = np.power(10, log_Ut4sq_list)
 Ut4sq_list = np.insert(Ut4sq_list, 0, 0.)
+Ut4sq_list = np.append(Ut4sq_list, 0.50)
 
 del24_list = [np.pi]
 print(del24_list)
@@ -42,7 +64,7 @@ flux_dict = {
     'index' : "0",
     'del14' : str(format(float(del14), '.6f')),
     'user' : 'adiaz', 
-    'osg' : "False",
+    'osg' : osg,
     'flux' : "AIRS_flux_sib_HG.dat"
 }
 
@@ -56,7 +78,7 @@ fastmc_dict = {
     'tau_neutrinos' : tau_neutrinos,
     'fastmc_dir' : fastmc_dir,
     'years' : years,
-    'osg' : "False"
+    'osg' : osg
 }
 
 fit_dict = {
@@ -70,7 +92,7 @@ fit_dict = {
     'realization_file' : realization_file,
     'n_seeds' : '-1',
     'years' : years,
-    'osg' : "True",
+    'osg' : osg,
     'change_tol' : '1e-20',
     'grad_tol' : '1e-20'
 }
@@ -136,7 +158,8 @@ for Ut4sq in Ut4sq_list:
                 points[j] = (dm2, Um4sq, Ut4sq, del24)
                 j+=1
 
-    F = os.getcwd() + '/Ut4sq_' + str(format(float(Ut4sq), '.6f')) + '.dag'
+    F = args.outdir_dag + '/Ut4sq_' + str(format(float(Ut4sq), '.6f')) + '.dag'
+    os.makedirs(args.outdir_dag, exist_ok=True)
     with open(F, 'w') as f:
 
         for (dm2, Um4sq, Ut4sq, del24) in  points:
@@ -144,7 +167,6 @@ for Ut4sq in Ut4sq_list:
 
             fluxdir = "/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/Fluxes/AIRS_sib_HG_th24_th34_dm2/Ut4sq_" + str(format(float(Ut4sq), '.6f')) + '/'
 
-            outdir = outdirbase + '/Ut4sq_' + str(format(float(Ut4sq), '.6f')) + '/'
 
             if Um4sq + Ut4sq > 1.:
                 continue
@@ -161,21 +183,29 @@ for Ut4sq in Ut4sq_list:
             if not math.isclose(Ut4sq,  np.sin(th34)**2 * np.cos(th24)**2):
                 print("ohno", Ut4sq, np.sin(th34)**2 * np.cos(th24)**2)
 
-            if not do_fluxes_exist(fluxdir, point):
-                os.makedirs(fluxdir, exist_ok=True)
-                make_flux(f, jobname_A, fluxdir, dm2, th24, th34, Ut4sq, del24, flux_dict['osg'])
-                f.write("PARENT " + jobname_A + " CHILD " + jobname_B + "\n")
-                # continue
-
             description = fastmc_dict['sim']+'_'+fastmc_dict['fast_scaling']+'_'+years+'_'+fluxdir.split('/')[-3]+'/'+fluxdir.split('/')[-2]+'/'+ point+'/'
 
-            if not os.path.exists(fastmc_dict['fastmc_dir'] + description +'/STERILE.meows'):
+            if args.make_flux and not do_fluxes_exist(fluxdir, point):
+                os.makedirs(fluxdir, exist_ok=True)
+                make_flux(f, jobname_A, fluxdir, dm2, th24, th34, Ut4sq, del24, flux_dict['osg'])
+
+                if args.make_fastmc:
+                    f.write("PARENT " + jobname_A + " CHILD " + jobname_B + "\n")
+                    os.makedirs(fastmc_dict['fastmc_dir'] + description, exist_ok=True)
+                    make_fastmc(f, jobname_B, fluxdir, point, Ut4sq, fastmc_dict['osg'])
+                    continue
+
+
+            if args.make_fastmc and not os.path.exists(fastmc_dict['fastmc_dir'] + description +'/STERILE.meows'):
+                if not do_fluxes_exist(fluxdir, point):
+                    continue
                 os.makedirs(fastmc_dict['fastmc_dir'] + description, exist_ok=True)
                 make_fastmc(f, jobname_B, fluxdir, point, Ut4sq, fastmc_dict['osg'])
-                f.write("PARENT " + jobname_B + " CHILD " + jobname_C + "\n")
                 # continue
 
-            if not os.path.exists(outdir+ point+'_'+ fit_dict['realization_file'].split('/' )[-1].split('.npz')[0]+'.json'):
-                os.makedirs(outdir, exist_ok=True)
-                make_fit(f, jobname_C, fluxdir, point, outdir, Ut4sq, fit_dict['osg'])
+            if args.do_fit:
+                outdir = outdirbase + '/Ut4sq_' + str(format(float(Ut4sq), '.6f')) + '/'
+                if not os.path.exists(outdir+ point+'_'+ fit_dict['realization_file'].split('/' )[-1].split('.npz')[0]+'.json'):
+                    os.makedirs(outdir, exist_ok=True)
+                    make_fit(f, jobname_C, fluxdir, point, outdir, Ut4sq, fit_dict['osg'])
                 # continue
