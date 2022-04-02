@@ -13,7 +13,7 @@ should_transfer_files   = YES
 transfer_input_files = /home/adiaz/MEOWS/Analysis/scripts/jobs/Brazil.py
 transfer_output_files = ""
 environment = "POINT=$(point)"
-arguments = "--point $(point) --use_fastMC $(use_fastMC) --Emax $(Emax) --sim $(sim) --max_sim $(max_sim) --fast_scaling $(fast_scaling) --realization_file $(realization_file) --outdir $(outdir) $(tau_neutrinos) --fastmc_dir $(fastmc_dir) --n_seeds $(n_seeds) --osg $(osg) --fluxdir $(fluxdir) --years $(years) --change_tol $(change_tol) --grad_tol $(grad_tol)"
+arguments = "--point $(point) --use_fastMC $(use_fastMC) --Emax $(Emax) --sim $(sim) --max_sim $(max_sim) --fast_scaling $(fast_scaling) --realization_file $(realization_file) --outdir $(outdir) $(tau_neutrinos) --fastmc_dir $(fastmc_dir) --n_seeds $(n_seeds) --osg $(osg) --fluxdir $(fluxdir) --years $(years) --change_tol $(change_tol) --grad_tol $(grad_tol) --inject_fit $(inject_fit) --inject_fit_file $(inject_fit_file)"
 stream_output = True
 request_memory = 3G
 #+AccountingGroup="quicktest.$ENV(USER)"
