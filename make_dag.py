@@ -8,7 +8,10 @@ import utils
 
 class DagMaker():
 
-    def __init__(self, fast_scaling, realization_file, n_seeds = '-1', fastmc_dir = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/FastMC/', years = '7.634', osg = "False", make_flux = "False", make_fastmc = "False", do_fit = "False", inject_fit = "False", inject_fit_file = "None"):
+    def __init__(self, fast_scaling, realization_file, 
+                 n_seeds = '-1', fastmc_dir = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/FastMC/', years = '7.634', 
+                 osg = "False", make_flux = False, make_fastmc = False, do_fit = False, inject_fit = "False", inject_fit_file = "None",
+                systematics = '11001110', barr= '00111111', multisim = '11', astro = '011', xs='111', bayes = 'False'):
         tau_neutrinos = ''
         self.flux_dict = {
             'indir' : "/data/user/adiaz/GolemFit/resources/FluxOscCalculator/",
@@ -44,9 +47,15 @@ class DagMaker():
             'years' : years,
             'inject_fit' : inject_fit,
             'inject_fit_file' : inject_fit_file,
+            'systematics': systematics,
+            'barr': barr,
+            'multisim': multisim,
+            'astro': astro,
+            'xs': xs,
             'osg' : osg,
             'change_tol' : '1e-20',
-            'grad_tol' : '1e-20'
+            'grad_tol' : '1e-20',
+            'bayes' : bayes
         }
 
         self.make_flux = make_flux
@@ -99,7 +108,7 @@ class DagMaker():
         self.print_vars(filename, jobname, 'outdir', outdir)
         for key, value in self.fit_dict.items():
             self.print_vars(filename, jobname, key, value)
-        filename.write('Retry ' + jobname + " 3\n")
+        # filename.write('Retry ' + jobname + " 3\n")
 
 
     def addtodag(self, dm2, Ue4sq, Um4sq, Ut4sq, del14, del24, f, job_index, outdir, index = 0):
