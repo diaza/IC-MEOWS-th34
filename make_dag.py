@@ -137,7 +137,7 @@ class DagMaker():
 
         if self.make_flux and not self.do_fluxes_exist(fluxdir, point):
             os.makedirs(fluxdir, exist_ok=True)
-            make_flux_dag(f, jobname_A, fluxdir, dm2, th24, th34, Ut4sq, del24, self.flux_dict['osg'])
+            self.make_flux_dag(f, jobname_A, fluxdir, dm2, th24, th34, Ut4sq, del24, self.flux_dict['osg'])
 
             if self.make_fastmc:
                 f.write("PARENT " + jobname_A + " CHILD " + jobname_B + "\n")
