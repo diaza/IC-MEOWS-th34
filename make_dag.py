@@ -14,11 +14,12 @@ class DagMaker():
                 systematics = '11001110', barr= '00111111', multisim = '11', astro = '011', xs='111', bayes = 'False'):
         tau_neutrinos = ''
         self.flux_dict = {
-            'indir' : "/data/user/adiaz/GolemFit/resources/FluxOscCalculator/",
+            'indir' : "/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/code/GolemFit/resources/FluxOscCalculator/",
             'index' : "0",
             'user' : 'adiaz', 
             'osg' : osg,
-            'flux' : "AIRS_flux_sib_HG.dat"
+            'conv_flux' : "AIRS_mceq121_conv_flux_2011_sib_HG_E3.dat",
+            'prompt_flux' : "AIRS_mceq121_pr_flux_2011_sib_HG_E3.dat",
         }
 
         self.fastmc_dict = {
@@ -73,14 +74,16 @@ class DagMaker():
                 return False
         return True
 
-    def make_flux_dag(self, filename, jobname, fluxdir, dm2, th24, th34, Ut4sq, del24, osg = "False"):
+    def make_flux_dag(self, filename, jobname, fluxdir, dm2, th14, th24, th34, Ut4sq, del14, del24, osg = "False"):
         if osg == "True":
             filename.write('JOB\t' + jobname + '\t/home/adiaz/Cascades/th34/make_flux_OSG.submit\n')
         else:
             filename.write('JOB\t' + jobname + '\t/home/adiaz/Cascades/th34/make_flux.submit\n')
+        self.print_vars(filename, jobname, 'th14',  str(format(float(th14), '.6f')))
         self.print_vars(filename, jobname, 'th24',  str(format(float(th24), '.6f')))
         self.print_vars(filename, jobname, 'th34',  str(format(float(th34), '.6f')))
         self.print_vars(filename, jobname, 'dmsq41',  str(format(float(dm2), '.6f')))
+        self.print_vars(filename, jobname, 'del14',  str(format(float(del14), '.6f')))
         self.print_vars(filename, jobname, 'del24',  str(format(float(del24), '.6f')))
         self.print_vars(filename, jobname, 'outdir',  fluxdir)
         for key, value in self.flux_dict.items():
@@ -113,7 +116,7 @@ class DagMaker():
 
     def addtodag(self, dm2, Ue4sq, Um4sq, Ut4sq, del14, del24, f, job_index, outdir, index = 0):
         i = job_index
-        fluxdir = "/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/Fluxes/AIRS_sib_HG_th24_th34_dm2/Ut4sq_" + str(format(float(Ut4sq), '.6f')) + '/'
+        fluxdir = "/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/Fluxes/AIRS_mceq121_2011_sib_HG_E3/Ut4sq_" + str(format(float(Ut4sq), '.6f')) + '/'
 
 
         if Um4sq + Ut4sq > 1.:
@@ -137,7 +140,7 @@ class DagMaker():
 
         if self.make_flux and not self.do_fluxes_exist(fluxdir, point):
             os.makedirs(fluxdir, exist_ok=True)
-            self.make_flux_dag(f, jobname_A, fluxdir, dm2, th24, th34, Ut4sq, del24, self.flux_dict['osg'])
+            self.make_flux_dag(f, jobname_A, fluxdir, dm2, th14, th24, th34, Ut4sq, del14, del24, self.flux_dict['osg'])
 
             if self.make_fastmc:
                 f.write("PARENT " + jobname_A + " CHILD " + jobname_B + "\n")

@@ -12,9 +12,10 @@ usage = "usage: %prog [options] inputfile"
 parser = OptionParser(usage)
 
 #parser.add_option("--indir",type="string",default = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/scripts/jobs/Resources/Flux_resources/')
-parser.add_option("--indir",type="string",default = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/scripts/jobs/Resources/GolemFit/resources/FluxOscCalculator/')
+parser.add_option("--indir",type="string",default = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/code/GolemFit/resources/FluxOscCalculator/')
 parser.add_option("--outdir",type="string",default = '/data/user/adiaz/test_fluxes/')
-parser.add_option("--flux",type="string",default = 'AIRS_flux_sib_HG.dat')
+parser.add_option("--conv_flux",type="string",default = 'AIRS_mceq121_conv_flux_2011_sib_HG_E3.dat')
+parser.add_option("--prompt_flux",type="string",default = 'AIRS_mceq121_pr_flux_2011_sib_HG_E3.dat')
 parser.add_option("--th24",type="string",default = '0.0')
 parser.add_option("--index",type="string",default = '0')
 parser.add_option("--dmsq41",type="string",default = '0')
@@ -29,7 +30,8 @@ parser.add_option("--osg",type="string",default = 'False')
 indir   = options.indir
 outdir  = options.outdir
 index 	= options.index
-flux    = options.flux
+conv_flux    = options.conv_flux
+prompt_flux    = options.prompt_flux
 dmsq41  = options.dmsq41
 th24    = options.th24
 th14 	= options.th14
@@ -46,6 +48,7 @@ del14_str   = str(format(float(del14), '.6f'))
 del24_str   = str(format(float(del24), '.6f'))
 
 if osg == 'True':
+    raise RuntimeError("Haven't made file compatible with OSG.")
     def copy_to_OSG(NPX_file):
         subprocess.check_call(['globus-url-copy','-nodcau','-rst', NPX_file,"file:"+os.getcwd()+'/'+str(NPX_file.split('/')[-1])])
     def copy_to_NPX(NPX_file):
@@ -87,8 +90,8 @@ if dmsq41 == '0.000000':
 print(' --- Calculating prompt atmospheric flux ---')
 check_file = outdir + '/prompt_atmospheric_0_'+dmsq41_str+'_'+th14_str+'_'+th24_str+'_'+th34_str+'_'+del14_str+'_'+del24_str+'.hdf5'
 if not os.path.isfile(check_file):
-    options = ' ' + indir + ' ' + outdir+' '+' '+str(index)+' ' + str(dmsq41)+' '+str(th14)+' '+str(th24)+' '+str(th34)+' '+str(del14)+' '+str(del24)
-    call_function = indir+ "/prompt_atmospheric_flux_calculator_with_interactions_from_nuflux " + options
+    options = ' ' + indir + ' ' + outdir+' '+ prompt_flux +  ' '+str(index)+' ' + str(dmsq41)+' '+str(th14)+' '+str(th24)+' '+str(th34)+' '+str(del14)+' '+str(del24)
+    call_function = indir+ "/prompt_atmospheric_flux_calculator_with_interactions_from_file " + options
     print(call_function)
     subprocess.call(call_function, shell=True)
 else:
@@ -110,7 +113,7 @@ if osg == 'True':
 print(' --- Calculating conventional atmospheric flux ---')
 check_file = outdir + '/atmospheric_0_'+dmsq41_str+'_'+th14_str+'_'+th24_str+'_'+th34_str+'_'+del14_str+'_'+del24_str+'.hdf5'
 if not os.path.isfile(check_file):
-    options = ' ' + indir +' '+outdir+' '+ flux +  ' '+str(index)+' ' + str(dmsq41)+' '+str(th14)+' '+str(th24)+' '+str(th34)+' '+str(del14)+' '+str(del24)
+    options = ' ' + indir +' '+outdir+' '+ conv_flux +  ' '+str(index)+' ' + str(dmsq41)+' '+str(th14)+' '+str(th24)+' '+str(th34)+' '+str(del14)+' '+str(del24)
     call_function = indir+ "/conventional_atmospheric_flux_calculator_with_interactions_from_file " + options
     print(call_function)
     subprocess.call(call_function, shell=True)

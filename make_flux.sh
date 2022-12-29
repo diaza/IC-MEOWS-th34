@@ -1,6 +1,6 @@
 #!/bin/bash
 
-COMMAND="python3 -u /home/adiaz/MEOWS/Analysis/scripts/jobs/Fluxes.py "
+COMMAND="python3 -u /home/adiaz/Cascades/th34/make_flux_fastmc/Fluxes.py "
 
 #echo "mkdir -pv $OUTDIR"
 #mkdir -pv $OUTDIR

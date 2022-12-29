@@ -186,7 +186,7 @@ if options.fastmc_dir == '':
 else:
     fastMC_location = options.fastmc_dir + '/' + sim+'_'+fast_scaling+'_'+years+'_'+fluxdir.split('/')[-3]+'/'+fluxdir.split('/')[-2]+'/'+ point+'/'
 
-datapath    = '/data/user/adiaz/GolemFit/'
+datapath    = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/code/GolemFit/'
 # datapath = '/cvmfs/icecube.opensciencegrid.org/users/carguelles/sterilize/sterilize_py3-v4.1.1/shared/'
 
 #prompt      = '/cvmfs/icecube.opensciencegrid.org/users/carguelles/sterile/resources/Fluxes/prompt/prompt_atmospheric.hdf5'

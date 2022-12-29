@@ -1,6 +1,6 @@
 #!/bin/bash
 
-COMMAND="python3 -u /home/adiaz/MEOWS/Analysis/scripts/jobs/Brazil.py "
+COMMAND="python3 -u /home/adiaz/Cascades/th34/Brazil.py "
 
 export HDF5_USE_FILE_LOCKING='FALSE'
 
