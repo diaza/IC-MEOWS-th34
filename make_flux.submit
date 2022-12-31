@@ -7,7 +7,7 @@ transfer_output_files = ""
 environment = "OUTDIR=$(outdir)"
 arguments = "--th24 $(th24) --indir $(indir) --outdir $(outdir) --conv_flux $(conv_flux) --prompt_flux $(prompt_flux) --index $(index) --dmsq41 $(dmsq41) --th14 $(th14) --th34 $(th34) --del14 $(del14) --del24 $(del24)"
 stream_output = True
-request_memory = 5G
+request_memory = 3G
 #+AccountingGroup="quicktest.$ENV(USER)"
 
 periodic_hold = (JobStatus == 2) && (time() - EnteredCurrentStatus) > (24 * 3600)
