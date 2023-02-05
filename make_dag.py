@@ -157,6 +157,9 @@ class DagMaker():
             # continue
 
         if self.do_fit:
+            if not os.path.exists(self.fastmc_dict['fastmc_dir'] + description +'/STERILE.meows'):
+                return
+            
             if not os.path.exists(outdir+ point+'_'+ self.fit_dict['realization_file'].split('/' )[-1].split('.npz')[0]+'.json'):
                 os.makedirs(outdir, exist_ok=True)
                 self.make_fit_dag(f, jobname_C, fluxdir, point, outdir, Ut4sq, self.fit_dict['osg'])
