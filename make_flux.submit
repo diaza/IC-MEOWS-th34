@@ -1,4 +1,4 @@
-executable = /home/adiaz/Cascades/th34/make_flux.sh
+executable = /data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/code/IC-MEOWS-th34/make_flux.sh
 log =    /scratch/adiaz/th34/fluxes/logs/$(ClusterID).out
 output = /scratch/adiaz/th34/fluxes/logs/$(ClusterID).stdout
 error =  /scratch/adiaz/th34/fluxes/logs/$(ClusterID).stderr

@@ -1,4 +1,4 @@
-executable = /home/adiaz/Cascades/th34/do_fit_OSG.sh
+executable = /data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/code/IC-MEOWS-th34/do_fit_OSG.sh
 
 use_x509userproxy = true   
 #+WantGlidein = True
@@ -10,7 +10,7 @@ log =    /scratch/adiaz/th34/fit/logs/$(ClusterID).out
 output = /scratch/adiaz/th34/fit/logs/$(ClusterID).stdout
 error =  /scratch/adiaz/th34/fit/logs/$(ClusterID).stderr
 should_transfer_files   = YES
-transfer_input_files = /home/adiaz/Cascades/th34/Brazil.py
+transfer_input_files = /data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/code/IC-MEOWS-th34/Brazil.py
 transfer_output_files = ""
 environment = "POINT=$(point)"
 arguments = "--point $(point) --use_fastMC $(use_fastMC) --Emax $(Emax) --sim $(sim) --max_sim $(max_sim) --fast_scaling $(fast_scaling) --realization_file $(realization_file) --outdir $(outdir) $(tau_neutrinos) --fastmc_dir $(fastmc_dir) --n_seeds $(n_seeds) --osg $(osg) --fluxdir $(fluxdir) --years $(years) --change_tol $(change_tol) --grad_tol $(grad_tol) --inject_fit $(inject_fit) --inject_fit_file $(inject_fit_file) --systematics $(systematics) --barr $(barr) --multisim $(multisim) --astro $(astro) --xs $(xs)  --bayes $(bayes)"
