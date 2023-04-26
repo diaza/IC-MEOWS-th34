@@ -1,4 +1,4 @@
-executable = /data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/code/IC-MEOWS-th34/do_fit.sh
+executable = /home/adiaz/IC-MEOWS-th34/do_fit.sh
 log =    /scratch/adiaz/th34/fit/logs/$(ClusterID).out
 output = /scratch/adiaz/th34/fit/logs/$(ClusterID).stdout
 error =  /scratch/adiaz/th34/fit/logs/$(ClusterID).stderr

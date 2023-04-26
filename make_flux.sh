@@ -1,6 +1,6 @@
 #!/bin/bash
 
-COMMAND="python3 -u /data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/code/IC-MEOWS-th34/make_flux_fastmc/Fluxes.py "
+COMMAND="python3 -u /home/adiaz/IC-MEOWS-th34/make_flux_fastmc/Fluxes.py "
 
 #echo "mkdir -pv $OUTDIR"
 #mkdir -pv $OUTDIR

@@ -76,9 +76,9 @@ class DagMaker():
 
     def make_flux_dag(self, filename, jobname, fluxdir, dm2, th14, th24, th34, Ut4sq, del14, del24, osg = "False"):
         if osg == "True":
-            filename.write('JOB\t' + jobname + '\t/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/code/IC-MEOWS-th34/make_flux_OSG.submit\n')
+            filename.write('JOB\t' + jobname + '\t/home/adiaz/IC-MEOWS-th34/make_flux_OSG.submit\n')
         else:
-            filename.write('JOB\t' + jobname + '\t/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/code/IC-MEOWS-th34/make_flux.submit\n')
+            filename.write('JOB\t' + jobname + '\t/home/adiaz/IC-MEOWS-th34/make_flux.submit\n')
         self.print_vars(filename, jobname, 'th14',  str(format(float(th14), '.6f')))
         self.print_vars(filename, jobname, 'th24',  str(format(float(th24), '.6f')))
         self.print_vars(filename, jobname, 'th34',  str(format(float(th34), '.6f')))
@@ -92,9 +92,9 @@ class DagMaker():
 
     def make_fastmc_dag(self, filename, jobname, fluxdir, point, Ut4sq, osg = "False"):
         if osg == "True":
-            filename.write('JOB\t' + jobname + '\t/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/code/IC-MEOWS-th34/make_fastmc_OSG.submit\n')
+            filename.write('JOB\t' + jobname + '\t/home/adiaz/IC-MEOWS-th34/make_fastmc_OSG.submit\n')
         else:
-            filename.write('JOB\t' + jobname + '\t/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/code/IC-MEOWS-th34/make_fastmc.submit\n')
+            filename.write('JOB\t' + jobname + '\t/home/adiaz/IC-MEOWS-th34/make_fastmc.submit\n')
         self.print_vars(filename, jobname, 'point', point)
         self.print_vars(filename, jobname, 'fluxdir', fluxdir)
         for key, value in self.fastmc_dict.items():
@@ -103,9 +103,9 @@ class DagMaker():
 
     def make_fit_dag(self, filename, jobname, fluxdir, point, outdir, Ut4sq, osg = "False"):
         if osg == "True":
-            filename.write('JOB\t' + jobname + '\t/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/code/IC-MEOWS-th34/do_fit_OSG.submit\n')
+            filename.write('JOB\t' + jobname + '\t/home/adiaz/IC-MEOWS-th34/do_fit_OSG.submit\n')
         else:
-            filename.write('JOB\t' + jobname + '\t/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/code/IC-MEOWS-th34/do_fit.submit\n')
+            filename.write('JOB\t' + jobname + '\t/home/adiaz/IC-MEOWS-th34/do_fit.submit\n')
         self.print_vars(filename, jobname, 'point', point)
         self.print_vars(filename, jobname, 'fluxdir', fluxdir)
         self.print_vars(filename, jobname, 'outdir', outdir)
