@@ -113,6 +113,8 @@ parser.add_option("--change_tol", type="string",  default='1e-20',
                         help="Set change tolerance of fitter")
 parser.add_option("--grad_tol", type="string",  default='1e-20',
                         help="Set gradient tolerance of fitter")
+parser.add_option("--crSlopeWidth", type="string",  default='0.03',
+                        help="Set Cosmic Ray Spectral Index width")
 # 0_50.000000_0.000000_0.039758_0.341393_0.000000_0.000000
 # 0_4.466836_0.000000_0.160875_0.000000_0.000000_0.000000
 
@@ -155,6 +157,8 @@ overwrite           = options.overwrite
 osg                 = options.osg
 spit_weights        = options.spit_weights
 Ebin_Edge           = 500
+
+crSlopeWidth = float(options.crSlopeWidth)
 
 if options.realization_loc == '':
     realization_loc = '/data/user/adiaz/Realizations/'+ sim+'_'+years+'_'+fluxdir.split('/')[-2]+'/'+point+'/'
@@ -715,7 +719,7 @@ priors.astro1Comp2DNormCenter   = AstroNormCenter
 priors.astro1Comp2DNormWidth    = AstroNormWidth
 priors.promptNormCenter         = PromptNormCenter
 
-priors.crSlopeWidth     = 0.03
+priors.crSlopeWidth     = crSlopeWidth
 priors.domEffWidth      = 0.123
 #priors.icegrad1Width = 2.0
 #priors.convNormWidth  = 0.4

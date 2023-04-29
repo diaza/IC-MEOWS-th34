@@ -11,7 +11,7 @@ class DagMaker():
     def __init__(self, fast_scaling, realization_file, 
                  n_seeds = '-1', fastmc_dir = '/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/FastMC/', years = '7.634', 
                  osg = "False", make_flux = False, make_fastmc = False, do_fit = False, inject_fit = "False", inject_fit_file = "None",
-                systematics = '11001110', barr= '00111111', multisim = '11', astro = '011', xs='111', bayes = 'False'):
+                systematics = '11001110', barr= '00111111', multisim = '11', astro = '011', xs='111', bayes = 'False', crSlopeWidth = "0.03"):
         tau_neutrinos = ''
         self.flux_dict = {
             'indir' : "/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/code/GolemFit/resources/FluxOscCalculator/",
@@ -56,7 +56,8 @@ class DagMaker():
             'osg' : osg,
             'change_tol' : '1e-20',
             'grad_tol' : '1e-20',
-            'bayes' : bayes
+            'bayes' : bayes,
+            'crSlopeWidth' : crSlopeWidth
         }
 
         self.make_flux = make_flux
