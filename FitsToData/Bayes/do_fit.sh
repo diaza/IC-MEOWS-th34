@@ -1,6 +1,6 @@
 #!/bin/bash
 
-COMMAND="python3 -u /home/adiaz/MEOWS/Analysis/scripts/jobs/Brazil.py "
+COMMAND="python3 -u /home/adiaz/IC-MEOWS-th34/Brazil.py "
 
 echo "mkdir -pv $OUTDIR"
 mkdir -pv $OUTDIR
