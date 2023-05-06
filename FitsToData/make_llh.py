@@ -1,11 +1,14 @@
 import numpy as np
+import os
 
 import utils
 
 # flux_name = "AIRS_sib_HG_th24_th34_dm2"
-# flux_name = "AIRS_mceq121_2011_sib_HG_E3"
-# dir_base = "/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/Fits/FitToData/" + flux_name + "/FS_0.50/"
-# suffix = '_Data_IC86.All_cut_everything_platinum_LT_240747841.json'
+flux_name = "AIRS_mceq121_2011_sib_HG_E3"
+# crgamma = "0.03"
+crgamma = "0.25"
+dir_base = "/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/Fits/FitToData/" + flux_name + "/crSlopeWidth_" + crgamma+ "/FS_0.50/"
+suffix = '_Data_IC86.All_cut_everything_platinum_LT_240747841.json'
 
 # dir_base = "/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/Fits/Asimov/AIRS_mceq121_2011_sib_HG_E3/CRgamma_0.06/FS_0.50/"
 # suffix = "_0_0.000000_0.000000_0.000000_0.000000_0.000000_0.000000_Asimov.json"
@@ -13,8 +16,8 @@ import utils
 # dir_base = "/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/Fits/Asimov/AIRS_mceq121_2011_sib_HG_E3/CRgamma_0.03/FS_0.50/"
 # suffix = "_0_0.000000_0.000000_0.000000_0.000000_0.000000_0.000000_Asimov.json"
 
-dir_base = "/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/Fits/Asimov/AIRS_mceq121_2011_sib_HG_E3/CRgamma_0.25/FS_0.50/"
-suffix = "_0_0.000000_0.000000_0.000000_0.000000_0.000000_0.000000_Asimov.json"
+# dir_base = "/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/Fits/Asimov/AIRS_mceq121_2011_sib_HG_E3/CRgamma_0.25/FS_0.50/"
+# suffix = "_0_0.000000_0.000000_0.000000_0.000000_0.000000_0.000000_Asimov.json"
 
 
 logdm2_list = np.asarray(np.ndarray.tolist(np.arange(-2.10, 2.10, 0.1))+ [2.15])
@@ -60,3 +63,14 @@ minimum_llhs[~n_seed_CV_min] = n_seeds_4[~n_seed_CV_min]
 
 np.save(dir_base + "/llhs", minimum_llhs)
 
+arg_min = np.unravel_index(minimum_llhs[:,:,3].argmin(), minimum_llhs[:,:,3].shape)
+dm2_min, Um4sq_min, Ut4sq_min, llh_min =minimum_llhs[arg_min]
+th14_min, th24_min, th34_min = utils.Usq_to_thetas(Um4sq = Um4sq_min, Ut4sq = Ut4sq_min)
+point_string = utils.get_point_string(dm2 = dm2_min, th24 = th24_min, th34 = th34_min, d24 = np.pi)
+
+if n_seed_CV_min[arg_min]:
+           min_file_name = dir_nseed_CV + "Ut4sq_{:.6f}/".format(Ut4sq_min) + point_string + suffix
+else:
+           min_file_name = dir_nseed_4 +  "Ut4sq_{:.6f}/".format(Ut4sq_min) + point_string + suffix
+
+os.system("cp " + min_file_name + " " + dir_base + "/BestFitBlind.json")
