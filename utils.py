@@ -230,7 +230,7 @@ sys_dict = {
         # inject_dict['pkr']              = 1.
         # inject_dict['nnbr']             = 1.
 'Normalization'    : (ConvNormCenter, ConvNormWidth, 1e-5, 10.),
-'CR'               : (0.,0.03, -0.8, 0.8),
+'CR'               : (0.,0.25, -0.8, 0.8),
 'ZenithCorrection' : (0, 1., -10, 10),
         # inject_dict['HQE']              = 1.35
         # inject_dict['barrHM']           = 0.
