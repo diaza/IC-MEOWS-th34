@@ -3,17 +3,17 @@ import json
 from os.path import exists
 
 logdm2_list = np.asarray(np.ndarray.tolist(np.arange(-2.10, 2.10, 0.1))+ [2.15])
-dm2_list = np.power(10, logdm2_list)  
+dm2_list = np.power(10, logdm2_list)
 dm2_list = dm2_list[np.logical_and(dm2_list>.1, dm2_list<50)]
 dm2_list = np.append(dm2_list, 50.0)
 
-log_Um4sq_list = np.asarray(np.ndarray.tolist(np.arange(-3., 0., 0.1)))  
+log_Um4sq_list = np.asarray(np.ndarray.tolist(np.arange(-3., 0., 0.1)))
 Um4sq_list = np.power(10, log_Um4sq_list)
 Um4sq_list = Um4sq_list[Um4sq_list<0.50]
 Um4sq_list = np.append(Um4sq_list, 0.50)
 
-log_Ut4sq_list = np.asarray(np.ndarray.tolist(np.arange(-3., 0., 0.2)))   
-Ut4sq_list = np.power(10, log_Ut4sq_list)  
+log_Ut4sq_list = np.asarray(np.ndarray.tolist(np.arange(-3., 0., 0.2)))
+Ut4sq_list = np.power(10, log_Ut4sq_list)
 Ut4sq_list = np.insert(Ut4sq_list, 0, 0.)
 Ut4sq_list = Ut4sq_list[Ut4sq_list<0.50]
 Ut4sq_list = np.append(Ut4sq_list, 0.50)
@@ -52,17 +52,17 @@ def get_data(u_dir):
 
                     if Um4sq + Ut4sq > 1.:
                         i+=1
-                        continue 
+                        continue
 
                     th24 = np.arcsin( np.sqrt(Um4sq) )
                     th34 = np.arcsin( np.sqrt(Ut4sq/np.cos(th24)**2) )
                     point = "{:.6f}_{:.6f}_{:.6f}".format(dm2, th24, th34)
                     suffix = ".json"
     #                     print(point)
-                    if exists(Ut4sq_dir + point+suffix):             
+                    if exists(Ut4sq_dir + point+suffix):
                         llh = get_ev(Ut4sq_dir + point+suffix)
                         data[k][i] = [dm2, Um4sq, Ut4sq, llh]
-                    else: 
+                    else:
                         # print(Ut4sq_dir + point+suffix)
                         data[k][i] = [dm2, Um4sq, Ut4sq, -np.inf]
 
@@ -70,26 +70,9 @@ def get_data(u_dir):
 
     return data
 
-# dir_loose = "/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/Fits/FitToData/Bayes/"
-# data_loose = get_data(dir_loose)
-# data_loose_null = np.array([0.,0.,0.,get_ev(dir_loose +"Ut4sq_0.000000/0.000000_0.000000_0.000000.json")])
-# np.save("bayes_loose.npy", data_loose)
-# np.save("bayes_loose_null.npy", data_loose_null)
 
-# dir_tight = "/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/Fits/FitToData/Bayes/evidence_tolerance_0.04_n_live_points_600_sampling_efficiency_0.3/"
-# data_tight = get_data(dir_tight)
-# data_tight_null = np.array([0.,0.,0.,get_ev(dir_tight +"Ut4sq_0.000000/0.000000_0.000000_0.000000.json")])
-# np.save("bayes_tight.npy", data_tight)
-# np.save("bayes_tight_null.npy", data_tight_null)
-
-dir_name = "/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/Fits/FitToData/Bayes/evidence_tolerance_0.5_n_live_points_300_sampling_efficiency_0.5_Run2/"
+dir_name = "/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/Fits/FitToData/AIRS_sib_HG_th24_th34_dm2/Bayes/evidence_tolerance_0.5_n_live_points_300_sampling_efficiency_0.5_crSlopeWidth_0.25/"
 data = get_data(dir_name)
 data_null =  np.array([0.,0.,0.,get_ev(dir_name +"Ut4sq_0.000000/0.000000_0.000000_0.000000.json")])
-np.save("bayes_evidence_tolerance_0.5_n_live_points_300_sampling_efficiency_0.5_Run2", data)
-np.save("bayes_evidence_tolerance_0.5_n_live_points_300_sampling_efficiency_0.5_Run2_null", data_null)
-
-# dir_name = "/data/ana/SterileNeutrino/IC86/HighEnergy/Analysis/th34/Fits/FitToData/Bayes/evidence_tolerance_0.5_n_live_points_1000_sampling_efficiency_0.5/"
-# data = get_data(dir_name)
-# data_null =  np.array([0.,0.,0.,get_ev(dir_name +"Ut4sq_0.000000/0.000000_0.000000_0.000000.json")])
-# np.save("bayes_evidence_tolerance_0.5_n_live_points_1000_sampling_efficiency_0.5", data)
-# np.save("bayes_evidence_tolerance_0.5_n_live_points_1000_sampling_efficiency_0.5_null", data_null)
+np.save(dir_name + "bayes_evidence_tolerance_0.5_n_live_points_300_sampling_efficiency_0.5_crSlopeWidth_0.25", data)
+np.save(dir_name + "bayes_evidence_tolerance_0.5_n_live_points_300_sampling_efficiency_0.5_crSlopeWidth_0.25_null", data_null)
